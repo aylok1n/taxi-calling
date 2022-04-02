@@ -14,13 +14,12 @@ let onClickTimeout: NodeJS.Timeout | null = null
 export default function Map() {
     const [map, setMap] = useState<mapboxgl.Map>();
     const mapNode = useRef<HTMLDivElement>(null);
-    const [center, setCenter] = useState([37.617633, 55.755820])
-
 
 
     //redux
     const dispatch = useAppDispatch()
     const addressStore = useAppSelector(store => store.address)
+    const positionStore = useAppSelector(store => store.userPosition)
 
     useEffect(() => {
         if (addressStore) {
@@ -34,15 +33,11 @@ export default function Map() {
         const node = mapNode.current;
         if (typeof window === "undefined" || node === null) return;
 
-        navigator.geolocation.getCurrentPosition((position) => {
-            const { longitude, latitude } = position.coords
-            setCenter([longitude, latitude])
-        })
-
         setMap(new mapboxgl.Map({
             container: node,
             style: "mapbox://styles/aylok1n/cl14g5yku002r14rkia9s9csi",
             accessToken: mapboxgl.accessToken,
+            center: [37.617633, 55.755820],
             zoom: 14,
         }));
 
@@ -55,10 +50,11 @@ export default function Map() {
     // set map center 
     useEffect(() => {
         if (map) {
-            map.setCenter({ lng: center[0], lat: center[1] })
+            const { lat, lng } = positionStore
+            if (lat && lng) map.setCenter({ lat, lng })
             map.on('click', onClickHandler)
         }
-    }, [map, center])
+    }, [map, positionStore])
 
 
     const createMarker = (lngLat: mapboxgl.LngLat, error: boolean = false) => {

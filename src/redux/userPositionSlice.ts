@@ -1,15 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 
-interface AddressState {
-    address: string | null,
+interface userPosition {
     lat: number | null,
     lng: number | null,
 }
 
 
-const initialState: AddressState = {
-    address: null,
+const initialState: userPosition = {
     lat: null,
     lng: null,
 }
@@ -19,8 +17,7 @@ export const addressSlice = createSlice({
     name: 'address',
     initialState,
     reducers: {
-        setAddress: (state, action: PayloadAction<AddressState>) => {
-            state.address = action.payload.address
+        setPosition: (state, action: PayloadAction<userPosition>) => {
             state.lng = action.payload.lng
             state.lat = action.payload.lat
         },
@@ -28,6 +25,6 @@ export const addressSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { setAddress } = addressSlice.actions
+export const { setPosition } = addressSlice.actions
 
 export default addressSlice.reducer

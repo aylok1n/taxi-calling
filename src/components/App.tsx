@@ -1,10 +1,22 @@
-import { AppBar, Box, Toolbar, Typography } from '@mui/material';
+import { AppBar, Toolbar, Typography } from '@mui/material';
+import { useEffect } from 'react';
 import '../index.css'
+import { useAppDispatch } from '../redux/hooks';
+import { setPosition } from '../redux/userPositionSlice';
 import Form from "./Form";
 import Map from './Map';
 
 
 function App() {
+
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      const { longitude, latitude } = position.coords
+      dispatch(setPosition({ lat: latitude, lng: longitude }))
+    })
+  }, [])
 
   return (
     <div className="App">
