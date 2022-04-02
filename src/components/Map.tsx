@@ -1,12 +1,10 @@
 import { useRef, useEffect, useState } from 'react';
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import '../index.css'
 import axios from 'axios';
 
-mapboxgl.accessToken = 'pk.eyJ1IjoiYXlsb2sxbiIsImEiOiJjbDE0ZmRramswbWFrM2JtdGYwbnU2d2d3In0.QRmUHL8-H_ExM2o2p2AEBw'
 
 
 export default function Map() {
@@ -14,9 +12,6 @@ export default function Map() {
     const mapNode = useRef<HTMLDivElement>(null);
     const [center, setCenter] = useState([37.617633, 55.755820])
 
-    const geocoder = new MapboxGeocoder({
-        accessToken: mapboxgl.accessToken
-    })
     let userMarker: mapboxgl.Marker | null = null
 
     //init map
@@ -32,7 +27,7 @@ export default function Map() {
         setMap(new mapboxgl.Map({
             container: node,
             style: "mapbox://styles/aylok1n/cl14g5yku002r14rkia9s9csi",
-            accessToken: 'pk.eyJ1IjoiYXlsb2sxbiIsImEiOiJjbDE0ZmRramswbWFrM2JtdGYwbnU2d2d3In0.QRmUHL8-H_ExM2o2p2AEBw',
+            accessToken: mapboxgl.accessToken,
             zoom: 13,
         }));
 
