@@ -4,15 +4,30 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import '../index.css'
 import axios from 'axios';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { setAddress } from '../redux/addressSlice';
+import { drawMarker } from '../utils';
 
-
+let userMarker: mapboxgl.Marker | null = null
+let onClickTimeout: NodeJS.Timeout | null = null
 
 export default function Map() {
     const [map, setMap] = useState<mapboxgl.Map>();
     const mapNode = useRef<HTMLDivElement>(null);
     const [center, setCenter] = useState([37.617633, 55.755820])
 
-    let userMarker: mapboxgl.Marker | null = null
+
+
+    //redux
+    const dispatch = useAppDispatch()
+    const addressStore = useAppSelector(store => store.address)
+
+    useEffect(() => {
+        if (addressStore) {
+            const { lng, lat } = addressStore
+            createMarker({ lng, lat } as mapboxgl.LngLat)
+        }
+    }, [addressStore])
 
     //init map
     useEffect(() => {
@@ -28,10 +43,11 @@ export default function Map() {
             container: node,
             style: "mapbox://styles/aylok1n/cl14g5yku002r14rkia9s9csi",
             accessToken: mapboxgl.accessToken,
-            zoom: 13,
+            zoom: 14,
         }));
 
         return () => {
+            if (onClickTimeout) clearTimeout(onClickTimeout)
             map?.remove();
         };
     }, []);
@@ -44,34 +60,40 @@ export default function Map() {
         }
     }, [map, center])
 
-    const createMarker = (lngLat: mapboxgl.LngLat) => {
+
+    const createMarker = (lngLat: mapboxgl.LngLat, error: boolean = false) => {
+        userMarker?.remove()
         if (map) {
-            if (userMarker) {
-                userMarker.remove()
-            }
-            userMarker = new mapboxgl.Marker({ color: 'yellow' })
-            userMarker.setLngLat(lngLat).addTo(map)
+            userMarker = new mapboxgl.Marker(error ? drawMarker('red', "Адрес<br/>не найден") : drawMarker('yellow')).setLngLat(lngLat).addTo(map)
         }
     }
 
     const onClickHandler = (event: mapboxgl.MapMouseEvent & mapboxgl.EventData) => {
+        // fix so many calls issue 
+        if (onClickTimeout) return
+        onClickTimeout = setTimeout(() => onClickTimeout = null, 300)
+
         // create user marker
         const { lng, lat } = event.lngLat
-
-        createMarker(event.lngLat)
-
         axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${mapboxgl.accessToken}`)
             .then(res => {
-                console.log(res.data)
-                if (res.status === 200) {
-                    const place = res.data.features[0]
-                    if (place) {
-                        createMarker({ lng: place.center[0], lat: place.center[1] } as mapboxgl.LngLat)
-                    }
+                const place = res.data.features[0]
+                if (!place || Math.abs(lng - place?.center[0]) > 0.001 || Math.abs(lat - place?.center[1]) > 0.001) {
+                    createMarker(event.lngLat, true)
+                }
+                else {
+                    dispatch(setAddress({
+                        address: res.data.features[0].properties.address || res.data.features[0].text,
+                        lng: place.center[0],
+                        lat: place.center[1]
+                    }))
                 }
             })
+            .catch(() => createMarker(event.lngLat, true))
     }
 
 
     return <div ref={mapNode} id='__next' />
+
+
 }
