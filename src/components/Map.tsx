@@ -44,11 +44,11 @@ export default function Map() {
 
 
     const onClickHandler = (event: mapboxgl.MapMouseEvent & mapboxgl.EventData) => {
-        
+
         if (map) new mapboxgl.Marker({ color: 'FFFF00' }).setLngLat(event.lngLat).addTo(map)
-        
+
     }
 
 
-    return <div ref={mapNode} style={{ width: 600, height: 500 }} id='__next' />
+    return <div ref={mapNode} id='__next' />
 }
