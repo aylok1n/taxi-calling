@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/bit-master/static/css/main.efccea8f.css",
-    "main.js": "/bit-master/static/js/main.ca676b46.js",
+    "main.css": "/bit-master/static/css/main.ae1ff0f6.css",
+    "main.js": "/bit-master/static/js/main.cb9b19a1.js",
     "index.html": "/bit-master/index.html",
-    "main.efccea8f.css.map": "/bit-master/static/css/main.efccea8f.css.map",
-    "main.ca676b46.js.map": "/bit-master/static/js/main.ca676b46.js.map"
+    "main.ae1ff0f6.css.map": "/bit-master/static/css/main.ae1ff0f6.css.map",
+    "main.cb9b19a1.js.map": "/bit-master/static/js/main.cb9b19a1.js.map"
   },
   "entrypoints": [
-    "static/css/main.efccea8f.css",
-    "static/js/main.ca676b46.js"
+    "static/css/main.ae1ff0f6.css",
+    "static/js/main.cb9b19a1.js"
   ]
 }
