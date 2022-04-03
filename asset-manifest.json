@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/bit-master/static/css/main.031a255b.css",
-    "main.js": "/bit-master/static/js/main.c8c30488.js",
+    "main.js": "/bit-master/static/js/main.4b6c3a81.js",
     "static/js/mapbox-gl-csp-worker.4ada8970.worker.js": "/bit-master/static/js/mapbox-gl-csp-worker.4ada8970.worker.js",
     "index.html": "/bit-master/index.html",
     "main.031a255b.css.map": "/bit-master/static/css/main.031a255b.css.map",
-    "main.c8c30488.js.map": "/bit-master/static/js/main.c8c30488.js.map"
+    "main.4b6c3a81.js.map": "/bit-master/static/js/main.4b6c3a81.js.map"
   },
   "entrypoints": [
     "static/css/main.031a255b.css",
-    "static/js/main.c8c30488.js"
+    "static/js/main.4b6c3a81.js"
   ]
 }
