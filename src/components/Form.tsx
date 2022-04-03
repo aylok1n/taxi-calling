@@ -44,11 +44,11 @@ const Form = () => {
             axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/
                 ${value}.json?
                 ${(userPosition.lng && userPosition.lat) ? '&proximity=' + userPosition.lng + ',' + userPosition.lat : ''}
+                &types=address,poi,region
                 &access_token=${mapboxgl.accessToken}`)
                 .then(res => {
                     const features = res.data?.features
                     if (features?.length) {
-                        console.log(features)
                         setAutoCompleteOptions(features.map((feature: any) => {
                             let address: string = feature.text + `${feature.address ? ', ' + feature.address : ''}`
                             const [lng, lat]: number[] = feature.center

@@ -79,9 +79,8 @@ export default function Map() {
 
         // create user marker
         const { lng, lat } = event.lngLat
-        axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?&access_token=${mapboxgl.accessToken}`)
+        axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?&types=address,poi,region&access_token=${mapboxgl.accessToken}`)
             .then(res => {
-                console.log(res.data.features[0])
                 const place = res.data.features[0]
                 if (!place || Math.abs(lng - place?.center[0]) > 0.001 || Math.abs(lat - place?.center[1]) > 0.001) {
                     createMarker(event.lngLat, true)
