@@ -25,10 +25,11 @@ export default function Map() {
     const positionStore = useAppSelector(store => store.userPosition)
 
     useEffect(() => {
-        if (addressStore) {
+        if (addressStore.address) {
             const { lng, lat } = addressStore
             createMarker({ lng, lat } as mapboxgl.LngLat)
         }
+        else userMarker?.remove()
     }, [addressStore])
 
     //init map
@@ -63,7 +64,11 @@ export default function Map() {
     const createMarker = (lngLat: mapboxgl.LngLat, error: boolean = false) => {
         userMarker?.remove()
         if (map) {
-            userMarker = new mapboxgl.Marker(error ? drawMarker('red', "Адрес<br/>не найден") : drawMarker('yellow')).setLngLat(lngLat).addTo(map)
+            map.setCenter(lngLat)
+
+            userMarker = new mapboxgl.Marker(error ? drawMarker('red', "Адрес<br/>не найден") : drawMarker('yellow'))
+                .setLngLat(lngLat)
+                .addTo(map)
         }
     }
 
@@ -74,8 +79,9 @@ export default function Map() {
 
         // create user marker
         const { lng, lat } = event.lngLat
-        axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${mapboxgl.accessToken}`)
+        axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?&access_token=${mapboxgl.accessToken}`)
             .then(res => {
+                console.log(res.data.features[0])
                 const place = res.data.features[0]
                 if (!place || Math.abs(lng - place?.center[0]) > 0.001 || Math.abs(lat - place?.center[1]) > 0.001) {
                     createMarker(event.lngLat, true)
@@ -92,7 +98,12 @@ export default function Map() {
     }
 
 
-    return <div ref={mapNode} id='__next' />
+    return (
+        <>
+            {JSON.stringify(addressStore)}
+            <div ref={mapNode} id='__next' />
+        </>
+    )
 
 
 }

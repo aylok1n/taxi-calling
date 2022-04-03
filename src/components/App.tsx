@@ -12,10 +12,19 @@ function App() {
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      const { longitude, latitude } = position.coords
-      dispatch(setPosition({ lat: latitude, lng: longitude }))
-    })
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { longitude, latitude } = position.coords
+          dispatch(setPosition({ lat: latitude, lng: longitude }))
+        },
+        null,
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0
+        });
+    }
   }, [])
 
   return (

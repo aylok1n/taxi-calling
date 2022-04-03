@@ -42,6 +42,28 @@ code {
   cursor: pointer;
 }
 
+.option {
+  cursor: pointer;
+  margin: 4px;
+  overflow: hidden;
+  display: 'flex';
+  font-weight: 600;
+  flex-direction: column;
+  text-align: start;
+  justify-content: start;
+  align-items: start;
+  border-bottom: 1px solid grey;
+}
+
+.option>small {
+  width: 300px;
+  font-weight: 300;
+  color: gray;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 * {
   box-sizing: border-box;
 }
