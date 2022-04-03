@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { setAddress } from '../redux/addressSlice';
 import { drawMarker } from '../utils';
 import mapboxgl from 'mapbox-gl';
-import { crew } from '../redux/crewsSlice';
+import { crew, setActiveCrew, setCrews } from '../redux/crewsSlice';
 
 // eslint-disable-next-line import/no-webpack-loader-syntax
 (mapboxgl as any).workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default
@@ -44,7 +44,11 @@ export default function Map() {
             const { lng, lat } = addressStore
             createMarker({ lng, lat } as mapboxgl.LngLat)
         }
-        else userMarker?.remove()
+        else {
+            userMarker?.remove()
+            crewsMarkers.forEach(marker => marker.remove())
+            crewsMarkers.length = 0
+        }
     }, [addressStore])
 
     //init map
@@ -82,11 +86,15 @@ export default function Map() {
                 .setLngLat(lngLat)
                 .addTo(map)
 
-            if (error) dispatch(setAddress({
-                address: null,
-                lng: null,
-                lat: null
-            }))
+            if (error) {
+                dispatch(setAddress({
+                    address: null,
+                    lng: null,
+                    lat: null
+                }))
+                dispatch(setActiveCrew(null))
+                dispatch(setCrews([]))
+            }
             else map.setCenter(lngLat)
         }
     }

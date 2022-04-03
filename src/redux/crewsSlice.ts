@@ -14,8 +14,9 @@ export type crew = {
 }
 
 
-const initialState: { crews: crew[] } = {
-    crews: []
+const initialState: { crews: crew[], activeCrew: null | number } = {
+    crews: [],
+    activeCrew: null
 }
 
 
@@ -26,10 +27,13 @@ export const crewsSlice = createSlice({
         setCrews: (state, action: PayloadAction<crew[]>) => {
             state.crews = action.payload
         },
+        setActiveCrew: (state, action: PayloadAction<crew['crew_id'] | null>) => {
+            state.activeCrew = action.payload
+        }
     },
 })
 
 // Action creators are generated for each case reducer function
-export const { setCrews } = crewsSlice.actions
+export const { setCrews, setActiveCrew } = crewsSlice.actions
 
 export default crewsSlice.reducer

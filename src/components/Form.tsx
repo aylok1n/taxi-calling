@@ -7,8 +7,8 @@ import { setAddress } from '../redux/addressSlice';
 import '../index.css'
 import Map from "./Map";
 import { getСrewsMock } from '../utils'
-import { setCrews } from "../redux/crewsSlice";
-import Crews from "./Crews";
+import { setActiveCrew, setCrews } from "../redux/crewsSlice";
+import Crews, { CrewCard } from "./Crews";
 
 interface AutoCompleteOption {
     address: string
@@ -30,7 +30,8 @@ const Form = () => {
     //redux stores
     const addressStore = useAppSelector(state => state.address)
     const userPosition = useAppSelector(store => store.userPosition)
-
+    const { activeCrew, crews } = useAppSelector(store => store.crews)
+    const activeCrewData = crews.find(crew => crew.crew_id === activeCrew)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -78,11 +79,15 @@ const Form = () => {
                 })
         }, 300)
 
-        if (reason === 'clear') dispatch(setAddress({
-            address: null,
-            lat: null,
-            lng: null
-        }))
+        if (reason === 'clear') {
+            dispatch(setAddress({
+                address: null,
+                lat: null,
+                lng: null
+            }))
+            dispatch(setActiveCrew(null))
+            dispatch(setCrews([]))
+        }
 
         if (reason === 'reset' && !value) setError('Адрес не найден')
         else setError(null)
@@ -100,6 +105,7 @@ const Form = () => {
     const onClickHandler = async () => {
         if (!value || error) return setError('Адрес не найден')
         else {
+            dispatch(setActiveCrew(null))
             setLoader(true)
             const now = new Date()
             const response = await getСrewsMock({
@@ -109,7 +115,11 @@ const Form = () => {
                 ]
             })
 
-            if (response.code === 0) dispatch(setCrews(response.data.crews_info.sort((a, b) => a.distance - b.distance)))
+            if (response.code === 0) {
+                const resultCrews = response.data.crews_info.sort((a, b) => a.distance - b.distance)
+                dispatch(setActiveCrew(resultCrews[0].crew_id))
+                dispatch(setCrews(resultCrews))
+            }
 
             setLoader(false)
         }
@@ -120,45 +130,54 @@ const Form = () => {
 
         <div className="form">
             {!!loader && <div>Идет поиск</div>}
-            <Autocomplete
-                style={{ width: 300 }}
-                isOptionEqualToValue={(option, value) => option.lat === value.lat && option.lng === value.lng}
-                value={value}
-                onChange={onSetValueHandler}
-                getOptionLabel={(option) => option.address}
-                inputValue={inputValue}
-                blurOnSelect
-                onInputChange={onChangeTextHandrler}
-                noOptionsText="Не найдено"
-                renderOption={(props, option) => <li {...props} className='option' key={option.lng + '_' + option.lat}>
-                    <div>{option.address}</div>
-                    {!!option.subtitle && <small style={{}} >
-                        {option.subtitle}
-                    </small>}
-                </li>}
-                aria-describedby="helper-text"
-                options={autoCompleteOptions}
-                sx={{ width: 300 }}
-                renderInput={(params: any) => <TextField
-                    required
-                    error={!!error}
-                    {...params}
-                    label={"Откуда"}
-                    helperText={error}
-                />}
-            />
-            <FormHelperText style={{ marginBottom: 50 }} id="helper-text">Также можете поставить метку на карте.</FormHelperText>
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: activeCrewData ? 'space-between' : 'center', width: '100%' }}>
+                <div>
+                    <Autocomplete
+                        style={{ width: 300 }}
+                        isOptionEqualToValue={(option, value) => option.lat === value.lat && option.lng === value.lng}
+                        value={value}
+                        onChange={onSetValueHandler}
+                        getOptionLabel={(option) => option.address}
+                        inputValue={inputValue}
+                        blurOnSelect
+                        onInputChange={onChangeTextHandrler}
+                        noOptionsText="Не найдено"
+                        renderOption={(props, option) => <li {...props} className='option' key={option.lng + '_' + option.lat}>
+                            <div>{option.address}</div>
+                            {!!option.subtitle && <small style={{}} >
+                                {option.subtitle}
+                            </small>}
+                        </li>}
+                        aria-describedby="helper-text"
+                        options={autoCompleteOptions}
+                        sx={{ width: 300 }}
+                        renderInput={(params: any) => <TextField
+                            required
+                            error={!!error}
+                            {...params}
+                            label={"Откуда"}
+                            helperText={error}
+                        />}
+                    />
+                    <FormHelperText style={{ marginBottom: 50 }} id="helper-text">Также можете поставить метку на карте.</FormHelperText>
+                </div>
+                {!!activeCrewData && <div style={{ width: '100%', maxWidth: 360 }} >
+                    <strong>За вами приедет</strong>
+                    <CrewCard {...activeCrewData} />
+                </div>}
+            </div>
             <div className="formBody">
                 <Map />
                 <Crews />
             </div>
+            {JSON.stringify(activeCrewData)}
             <Button
                 variant="contained"
                 style={{ marginTop: 50 }}
                 disabled={!!error || loader}
                 onClick={onClickHandler}
             >
-                Заказать
+                {activeCrewData ? "Заказать" : 'Найти'}
             </Button>
         </div>
     )
