@@ -43,9 +43,6 @@ export const getСrewsMock = ({ source_time, addresses }: getСrewsMockInterface
 
     const crews: { crew_id: number; car_mark: any; car_model: any; car_color: any; car_number: any; driver_name: string; driver_phone: string; lat: number; lon: number; distance: number; }[] = []
 
-    console.log(selfRandom(-0.0003, 0.0003))
-    console.log(selfRandom(-0.0003, 0.0003))
-
     for (let i = 0; i < count; i++) {
         crews.push({
             "crew_id": parseInt((Math.random() * 1000).toFixed(0)),
@@ -72,6 +69,18 @@ export const getСrewsMock = ({ source_time, addresses }: getСrewsMockInterface
     return new Promise((resolve: (val: typeof res) => void) => {
         setTimeout(() => {
             resolve(res)
+        }, 1000)
+    })
+}
+
+interface callTaxiMockInterface extends getСrewsMockInterface {
+    crew_id: number
+}
+
+export const callTaxiMock = (data: callTaxiMockInterface) => {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve(alert(`Экипаж №${data.crew_id} вызван`))
         }, 1000)
     })
 }

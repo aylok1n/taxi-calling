@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setAddress } from '../redux/addressSlice';
 import '../index.css'
 import Map from "./Map";
-import { getСrewsMock } from '../utils'
+import { callTaxiMock, getСrewsMock } from '../utils'
 import { setActiveCrew, setCrews } from "../redux/crewsSlice";
 import Crews, { CrewCard } from "./Crews";
 
@@ -26,7 +26,6 @@ const Form = () => {
     const [autoCompleteOptions, setAutoCompleteOptions] = useState<AutoCompleteOption[]>([])
     const [mounted, setMounted] = useState(false)
     const [loader, setLoader] = useState(false)
-
     //redux stores
     const addressStore = useAppSelector(state => state.address)
     const userPosition = useAppSelector(store => store.userPosition)
@@ -103,11 +102,23 @@ const Form = () => {
     }
 
     const onClickHandler = async () => {
+        const now = new Date()
         if (!value || error) return setError('Адрес не найден')
+        else if (activeCrewData) {
+            setLoader(true)
+            await callTaxiMock({
+                source_time: now.toISOString().replace(/(\.\d{3})|[^\d]/g, ''),
+                addresses: [
+                    value
+                ],
+                crew_id: activeCrewData.crew_id
+            })
+            setLoader(false)
+        }
         else {
             dispatch(setActiveCrew(null))
+
             setLoader(true)
-            const now = new Date()
             const response = await getСrewsMock({
                 source_time: now.toISOString().replace(/(\.\d{3})|[^\d]/g, ''),
                 addresses: [
@@ -123,14 +134,18 @@ const Form = () => {
 
             setLoader(false)
         }
-
     }
 
     return (
-
         <div className="form">
             {!!loader && <div>Идет поиск</div>}
-            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: activeCrewData ? 'space-between' : 'center', width: '100%' }}>
+            <div style={{
+                display: 'flex',
+                flexDirection: window.innerWidth < 700 ? 'column' : 'row',
+                alignItems: window.innerWidth < 700 ? 'center' : 'start',
+                justifyContent: activeCrewData ? 'space-between' : 'center',
+                width: '100%'
+            }}>
                 <div>
                     <Autocomplete
                         style={{ width: 300 }}
@@ -161,24 +176,23 @@ const Form = () => {
                     />
                     <FormHelperText style={{ marginBottom: 50 }} id="helper-text">Также можете поставить метку на карте.</FormHelperText>
                 </div>
-                {!!activeCrewData && <div style={{ width: '100%', maxWidth: 360 }} >
+                {!!activeCrewData && <div style={{ width: '100%', maxWidth: 360, border: '1px solid grey', borderRadius: 10, padding: 2, marginBottom: 10 }} >
                     <strong>За вами приедет</strong>
                     <CrewCard {...activeCrewData} />
                 </div>}
             </div>
-            <div className="formBody">
-                <Map />
-                <Crews />
-            </div>
-            {JSON.stringify(activeCrewData)}
             <Button
                 variant="contained"
-                style={{ marginTop: 50 }}
+                style={{ marginBottom: 50 }}
                 disabled={!!error || loader}
                 onClick={onClickHandler}
             >
                 {activeCrewData ? "Заказать" : 'Найти'}
             </Button>
+            <div className="formBody">
+                <Map />
+                <Crews />
+            </div>
         </div>
     )
 }
