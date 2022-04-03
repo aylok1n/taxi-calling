@@ -7,6 +7,8 @@ import { setAddress } from '../redux/addressSlice';
 import '../index.css'
 import Map from "./Map";
 import { getСrewsMock } from '../utils'
+import { setCrews } from "../redux/crewsSlice";
+import Crews from "./Crews";
 
 interface AutoCompleteOption {
     address: string
@@ -24,8 +26,9 @@ const Form = () => {
     const [autoCompleteOptions, setAutoCompleteOptions] = useState<AutoCompleteOption[]>([])
     const [mounted, setMounted] = useState(false)
     const [loader, setLoader] = useState(false)
+
     //redux stores
-    const addressStore = useAppSelector((state) => state.address)
+    const addressStore = useAppSelector(state => state.address)
     const userPosition = useAppSelector(store => store.userPosition)
 
     const dispatch = useAppDispatch()
@@ -106,6 +109,8 @@ const Form = () => {
                 ]
             })
 
+            if (response.code === 0) dispatch(setCrews(response.data.crews_info.sort((a, b) => a.distance - b.distance)))
+
             setLoader(false)
         }
 
@@ -113,7 +118,7 @@ const Form = () => {
 
     return (
 
-        <>
+        <div className="form">
             {!!loader && <div>Идет поиск</div>}
             <Autocomplete
                 style={{ width: 300 }}
@@ -143,7 +148,10 @@ const Form = () => {
                 />}
             />
             <FormHelperText style={{ marginBottom: 50 }} id="helper-text">Также можете поставить метку на карте.</FormHelperText>
-            <Map />
+            <div className="formBody">
+                <Map />
+                <Crews />
+            </div>
             <Button
                 variant="contained"
                 style={{ marginTop: 50 }}
@@ -152,7 +160,7 @@ const Form = () => {
             >
                 Заказать
             </Button>
-        </>
+        </div>
     )
 }
 

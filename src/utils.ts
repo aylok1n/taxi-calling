@@ -33,7 +33,7 @@ const arrayRandElement = (arr: any[]) => {
     return arr[rand];
 }
 const selfRandom = (min: number, max: number) => {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    return Math.random() * (max - min) + min
 }
 
 
@@ -43,6 +43,9 @@ export const getСrewsMock = ({ source_time, addresses }: getСrewsMockInterface
 
     const crews: { crew_id: number; car_mark: any; car_model: any; car_color: any; car_number: any; driver_name: string; driver_phone: string; lat: number; lon: number; distance: number; }[] = []
 
+    console.log(selfRandom(-0.0003, 0.0003))
+    console.log(selfRandom(-0.0003, 0.0003))
+
     for (let i = 0; i < count; i++) {
         crews.push({
             "crew_id": parseInt((Math.random() * 1000).toFixed(0)),
@@ -51,22 +54,24 @@ export const getСrewsMock = ({ source_time, addresses }: getСrewsMockInterface
             "car_color": arrayRandElement(['синий', 'белый', 'серый', 'коричневый']),
             "car_number": arrayRandElement(['Е123КУ', 'К324ТМ', 'С849ХР', 'К456МС']),
             "driver_name": faker.name.firstName(),
-            "driver_phone": faker.phone.phoneNumber(),
-            "lat": addresses[0].lat + selfRandom(-0.00003, 0.00003),
-            "lon": addresses[0].lat + selfRandom(-0.00003, 0.00003),
-            "distance": selfRandom(100, 1000)
+            "driver_phone": faker.phone.phoneNumber('+7 9## ### ## ##'),
+            "lat": addresses[0].lat + selfRandom(-0.003, 0.003),
+            "lon": addresses[0].lng + selfRandom(-0.003, 0.003),
+            "distance": Math.floor(selfRandom(100, 1000))
         })
     }
 
-    return new Promise((resolve) => {
+    const res = {
+        code: 0,
+        descr: "OK",
+        data: {
+            "crews_info": crews
+        }
+    }
+
+    return new Promise((resolve: (val: typeof res) => void) => {
         setTimeout(() => {
-            resolve({
-                code: 0,
-                descr: "OK",
-                data: {
-                    "crews_info": crews
-                }
-            })
+            resolve(res)
         }, 1000)
     })
 }

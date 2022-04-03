@@ -22,9 +22,8 @@ code {
 }
 
 #__next {
-  /* flex: 1; */
   width: 100%;
-  height: calc(100vh - 350px);
+  height:100%;
   max-width: 1000px;
 }
 
@@ -62,6 +61,22 @@ code {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.formBody {
+  height: calc(100vh - 350px);
+  flex-direction: row;
+  display: flex;
+  width: 100%;
 }
 
 * {

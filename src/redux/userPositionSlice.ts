@@ -14,7 +14,7 @@ const initialState: userPosition = {
 
 
 export const addressSlice = createSlice({
-    name: 'address',
+    name: 'position',
     initialState,
     reducers: {
         setPosition: (state, action: PayloadAction<userPosition>) => {

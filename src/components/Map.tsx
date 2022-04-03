@@ -7,11 +7,13 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { setAddress } from '../redux/addressSlice';
 import { drawMarker } from '../utils';
 import mapboxgl from 'mapbox-gl';
+import { crew } from '../redux/crewsSlice';
 
 // eslint-disable-next-line import/no-webpack-loader-syntax
 (mapboxgl as any).workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default
 
 let userMarker: mapboxgl.Marker | null = null
+const crewsMarkers: mapboxgl.Marker[] = []
 let onClickTimeout: NodeJS.Timeout | null = null
 
 export default function Map() {
@@ -23,6 +25,19 @@ export default function Map() {
     const dispatch = useAppDispatch()
     const addressStore = useAppSelector(store => store.address)
     const positionStore = useAppSelector(store => store.userPosition)
+    const { crews } = useAppSelector(store => store.crews)
+
+    useEffect(() => {
+        crewsMarkers.forEach(marker => marker.remove())
+        crewsMarkers.length = 0
+        if (map) {
+            crews.forEach((crew: crew) => {
+                const marker = new mapboxgl.Marker(drawMarker("green")).setLngLat({ lat: crew.lat, lng: crew.lon }).addTo(map)
+                crewsMarkers.push(marker)
+            })
+        }
+
+    }, [crews])
 
     useEffect(() => {
         if (addressStore.address) {
@@ -63,7 +78,7 @@ export default function Map() {
     const createMarker = (lngLat: mapboxgl.LngLat, error: boolean = false) => {
         userMarker?.remove()
         if (map) {
-            userMarker = new mapboxgl.Marker(error ? drawMarker('red', "Адрес<br/>не найден") : drawMarker('yellow'))
+            userMarker = new mapboxgl.Marker(error ? drawMarker('red', "Адрес<br/>не найден") : drawMarker("yellow"))
                 .setLngLat(lngLat)
                 .addTo(map)
 
@@ -101,12 +116,5 @@ export default function Map() {
     }
 
 
-    return (
-        <>
-            {JSON.stringify(addressStore)}
-            <div ref={mapNode} id='__next' />
-        </>
-    )
-
-
+    return <div ref={mapNode} id='__next' />
 }

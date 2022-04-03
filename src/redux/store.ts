@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
 import addressSlice from './addressSlice'
+import crewsSlice from './crewsSlice'
 import userPositionSlice from './userPositionSlice'
 
 export const store = configureStore({
     reducer: {
         address: addressSlice,
-        userPosition: userPositionSlice
+        userPosition: userPositionSlice,
+        crews: crewsSlice
     },
 })
 
