@@ -60,15 +60,19 @@ export default function Map() {
         }
     }, [map, positionStore])
 
-
     const createMarker = (lngLat: mapboxgl.LngLat, error: boolean = false) => {
         userMarker?.remove()
         if (map) {
-            map.setCenter(lngLat)
-
             userMarker = new mapboxgl.Marker(error ? drawMarker('red', "Адрес<br/>не найден") : drawMarker('yellow'))
                 .setLngLat(lngLat)
                 .addTo(map)
+
+            if (error) dispatch(setAddress({
+                address: null,
+                lng: null,
+                lat: null
+            }))
+            else map.setCenter(lngLat)
         }
     }
 

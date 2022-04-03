@@ -1,4 +1,5 @@
 
+import { faker } from '@faker-js/faker';
 
 export const drawMarker = (color: string, text?: string) => {
     const marker = document.createElement('div')
@@ -21,4 +22,51 @@ export const drawMarker = (color: string, text?: string) => {
         <span class="mapPopup">${text || ''}</span>
         `
     return marker
+}
+
+interface getСrewsMockInterface {
+    source_time: string,
+    addresses: { address: string, lat: number, lng: number }[]
+}
+const arrayRandElement = (arr: any[]) => {
+    var rand = Math.floor(Math.random() * arr.length);
+    return arr[rand];
+}
+const selfRandom = (min: number, max: number) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+
+export const getСrewsMock = ({ source_time, addresses }: getСrewsMockInterface) => {
+
+    const count = parseInt((Math.random() * 10).toFixed(0))
+
+    const crews: { crew_id: number; car_mark: any; car_model: any; car_color: any; car_number: any; driver_name: string; driver_phone: string; lat: number; lon: number; distance: number; }[] = []
+
+    for (let i = 0; i < count; i++) {
+        crews.push({
+            "crew_id": parseInt((Math.random() * 1000).toFixed(0)),
+            "car_mark": arrayRandElement(["Chevrolet", 'lada', 'renualt', 'skoda']),
+            "car_model": arrayRandElement(["granta", 'largus', 'vesta', 'oktavia', 'logan', 'lanos']),
+            "car_color": arrayRandElement(['синий', 'белый', 'серый', 'коричневый']),
+            "car_number": arrayRandElement(['Е123КУ', 'К324ТМ', 'С849ХР', 'К456МС']),
+            "driver_name": faker.name.firstName(),
+            "driver_phone": faker.phone.phoneNumber(),
+            "lat": addresses[0].lat + selfRandom(-0.00003, 0.00003),
+            "lon": addresses[0].lat + selfRandom(-0.00003, 0.00003),
+            "distance": selfRandom(100, 1000)
+        })
+    }
+
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve({
+                code: 0,
+                descr: "OK",
+                data: {
+                    "crews_info": crews
+                }
+            })
+        }, 1000)
+    })
 }

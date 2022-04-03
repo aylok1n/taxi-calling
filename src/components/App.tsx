@@ -4,11 +4,8 @@ import '../index.css'
 import { useAppDispatch } from '../redux/hooks';
 import { setPosition } from '../redux/userPositionSlice';
 import Form from "./Form";
-import Map from './Map';
-
 
 function App() {
-
   const dispatch = useAppDispatch()
 
   useEffect(() => {
@@ -37,7 +34,6 @@ function App() {
         </Toolbar>
       </AppBar>
       <Form />
-      <Map />
     </div>
   );
 }
