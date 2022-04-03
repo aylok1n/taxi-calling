@@ -1,5 +1,4 @@
 import { useRef, useEffect, useState } from 'react';
-import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 import '../index.css'
@@ -7,6 +6,10 @@ import axios from 'axios';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { setAddress } from '../redux/addressSlice';
 import { drawMarker } from '../utils';
+import mapboxgl from 'mapbox-gl';
+
+// eslint-disable-next-line import/no-webpack-loader-syntax
+(mapboxgl as any).workerClass = require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default
 
 let userMarker: mapboxgl.Marker | null = null
 let onClickTimeout: NodeJS.Timeout | null = null
